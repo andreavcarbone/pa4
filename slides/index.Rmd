@@ -1,0 +1,130 @@
+---
+title: "Programming Assignment 4"
+subtitle: "Data Science"
+author: "Andrea Valeria Carbone"
+date: "2025/03/25 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ds4ling)
+```
+
+```{r}
+data <- read.csv("/Users/avaleriacarbone/Desktop/pa4/data_raw/fricatives/fricatives.csv")
+```
+
+```{r}
+#data tidying
+
+data_tidy <- data |>
+  pivot_longer(cols = c(s_cog, sh_cog),
+               names_to = "phoneme",
+               values_to = "cog")|>
+pivot_longer(cols = c(s_skewness, sh_skewness),
+             names_to = "phoneme_skewness",
+             values_to = "skewness")|>
+  select("phoneme", "cog", "skewness")|>
+  mutate(phoneme = gsub("_cog", "", phoneme))
+         
+         print(data_tidy)
+         
+#table of descriptive statistics
+         summary(data_tidy)
+         print(summary(data_tidy))
+```
+#Boxpot of cog as a function of phoneme
+---
+```{r}
+data_tidy|>
+  ggplot() +
+  (aes(x = phoneme, y = cog, fill = phoneme)) +
+  geom_boxplot() +
+  labs(title = "cog",
+       x = "phoneme", y = "cog")
+       
+
+```
+
+---
+#skewness as a function of phoneme
+
+```{r}
+ggplot(data_tidy,
+       aes(x = phoneme, y = skewness, fill = phoneme)) +
+  stat_summary(fun = mean) +
+  labs(title = "skewness as a function of phoneme",
+       x = "phoneme", y = "skewness")
+       
+```
+
+#cog as a function of skewness for the s segments
+---
+```{r}
+data_s <- data_tidy |> 
+  
+  filter(phoneme == "s")
+
+model <- lm(
+  cog ~ skewness,
+  data = data_s)
+
+print(model)
+```
+---
+#scatterplot
+```{r}
+data_tidy |>
+ggplot() +
+  aes(x = cog, y = skewness) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "gravity as a function of skewness",
+      x = "cog", y = "skewness")
+
+```
+
+---
+#Model diagnostics
+```{r}
+
+diagnosis(model)
+```
+---
+# report
+
+---
+```{r}
+data_2 <- read_csv("/Users/avaleriacarbone/Desktop/pa4/data_raw/fricatives/assumptions.csv")
+```
+
+```{r}
+data_2|>
+  ggplot() +
+  geom_point() +
+  aes(x = x, y = y) +
+  labs (x ="x", y ="y", tile = "Assumptions")
+
+```
+---
+#explanation
+
+the data shows too many outliers. the data is not linear.
+
+---
+
+
+
+
+
+
+
+
+
