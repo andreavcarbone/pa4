@@ -15,12 +15,14 @@ output:
 library(tidyverse)
 library(dplyr)
 library(ds4ling)
+library("here")
 ```
+---
 
 ```{r}
-data <- read.csv("/Users/avaleriacarbone/Desktop/pa4/data_raw/fricatives/fricatives.csv")
+data <- read.csv(here("data_raw", "fricatives", "fricatives.csv"))
 ```
-
+---
 ```{r}
 #data tidying
 
@@ -34,14 +36,39 @@ pivot_longer(cols = c(s_skewness, sh_skewness),
   select("phoneme", "cog", "skewness")|>
   mutate(phoneme = gsub("_cog", "", phoneme))
          
-         print(data_tidy)
+        
          
 #table of descriptive statistics
          summary(data_tidy)
          print(summary(data_tidy))
+         write.csv(data_tidy, "../data_tidy/data_tidy.csv")
 ```
-#Boxpot of cog as a function of phoneme
 ---
+```{r}
+ print(data_tidy)
+```
+---
+#Table of descriptive statistics
+```{r}
+summary_table <- data_tidy|>
+  group_by(phoneme)|>
+  summarise(
+    mean_skew = mean (skewness),
+    mean_cog = mean (cog),
+    mean_skew = median (skewness),
+    mead_cog = median (cog)
+    
+  )
+knitr::kable(summary_table)
+```
+---
+#Tidy data
+```{r}
+write.csv(data_tidy, "../data_tidy/data_tidy.csv")
+```
+---
+#Boxpot of cog as a function of phoneme
+
 ```{r}
 data_tidy|>
   ggplot() +
@@ -92,6 +119,13 @@ ggplot() +
 ```
 
 ---
+#Table model
+```{r}
+knitr::kable(summary(model)$coef)
+```
+
+
+---
 #Model diagnostics
 ```{r}
 
@@ -99,10 +133,13 @@ diagnosis(model)
 ```
 ---
 # report
+There is a positive correlation between skewness and center of gravity, so as skewness increases, the center of gravity also shifts in the same direction, and the increase of COG is statistically significant with pi values around 0. 
+
+
 
 ---
 ```{r}
-data_2 <- read_csv("/Users/avaleriacarbone/Desktop/pa4/data_raw/fricatives/assumptions.csv")
+data_2 <- read_csv(here("data_raw", "fricatives", "assumptions.csv"))
 ```
 
 ```{r}
@@ -116,7 +153,7 @@ data_2|>
 ---
 #explanation
 
-the data shows too many outliers. the data is not linear.
+There is not real data, but a dinosaur.
 
 ---
 
